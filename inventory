@@ -1,0 +1,20 @@
+localhost ansible_connection=local ansible_python_interpreter="/usr/bin/env python3"
+
+[all:vars]
+dockerhub_base=ansible
+awx_task_hostname=awx
+awx_web_hostname=awxweb
+postgres_data_dir="~/.awx/pgdocker"
+host_port=80
+host_port_ssl=443
+docker_compose_dir="~/.awx/awxcompose"
+
+pg_username=awx
+pg_password=awxpass
+pg_database=awx
+pg_port=5432
+
+admin_user=admin
+admin_password=admin
+
+create_preload_data=True
