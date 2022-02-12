@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Vars
-greenColour="\e[0;32m\033[1m"
 endColour="\033[0m\e[0m"
+greenColour="\e[0;32m\033[1m"
 redColour="\e[0;31m\033[1m"
 blueColour="\e[0;34m\033[1m"
 yellowColour="\e[0;33m\033[1m"
@@ -11,19 +11,35 @@ turquoiseColour="\e[0;36m\033[1m"
 grayColour="\e[0;37m\033[1m"
 orangeColour="\033[38;5;214m"
 bold="\033[1m"
-normal="\033[0m"
 
 currentUser=$USER
 
-# Hidde cursor
-trap ctrl_c INT
+clear
 tput civis
+echo -e "$turquoiseColour
+ █████╗ ███╗   ██╗███████╗██╗██████╗ ██╗     ███████╗     █████╗ ██╗    ██╗██╗  ██╗
+██╔══██╗████╗  ██║██╔════╝██║██╔══██╗██║     ██╔════╝    ██╔══██╗██║    ██║╚██╗██╔╝
+███████║██╔██╗ ██║███████╗██║██████╔╝██║     █████╗      ███████║██║ █╗ ██║ ╚███╔╝
+██╔══██║██║╚██╗██║╚════██║██║██╔══██╗██║     ██╔══╝      ██╔══██║██║███╗██║ ██╔██╗
+██║  ██║██║ ╚████║███████║██║██████╔╝███████╗███████╗    ██║  ██║╚███╔███╔╝██╔╝ ██╗
+╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝╚═════╝ ╚══════╝╚══════╝    ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝
 
-# Control ctrl_c 
+             ██╗   ██╗██████╗ ██╗   ██╗███╗   ██╗████████╗██╗   ██╗
+             ██║   ██║██╔══██╗██║   ██║████╗  ██║╚══██╔══╝██║   ██║
+             ██║   ██║██████╔╝██║   ██║██╔██╗ ██║   ██║   ██║   ██║
+             ██║   ██║██╔══██╗██║   ██║██║╚██╗██║   ██║   ██║   ██║
+             ╚██████╔╝██████╔╝╚██████╔╝██║ ╚████║   ██║   ╚██████╔╝
+              ╚═════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝   ╚═╝    ╚═════╝ $endColour
+                          $bold $greenColour by: github.com/Alopezfu
+                            repo: github.com/Alopezfu/Ansible-AWX-docker
+"; sleep 3
+
+# Control ctrl_c
+trap ctrl_c INT
 function ctrl_c(){
-	log "Info" "Exit..."
-	tput cnorm
-	exit 0
+        log "Info" "Exit..."
+        tput cnorm
+        exit 0
 }
 
 # Functions
@@ -44,8 +60,7 @@ function log(){
 
     if [ $1 == "Error" ];
     then
-        echo -e "${redColour}[!]${endColour} $2"
-        sleep 1
+        echo -en "${redColour}[!]${endColour} $2"
     fi
 
 }
@@ -72,13 +87,25 @@ function configDocker(){
 }
 
 function getInstalled(){
-   
+
     which $1 2>&1> /dev/null ; echo $?
 }
 
 function prerequisites(){
 
     log "Title" "Checking prerequisites"
+
+    if [[ $(lsb_release -i | xargs | cut -d ' ' -f 3) -ne "Ubuntu" ]];
+    then
+        log "Error" "Your operating system is not Ubuntu, the script is prepared for ubuntu. Do you want to continue? [y/n]: "
+        read q
+        while [[ $q != "y" ]]
+        do
+            [[ $q == "n" ]] && ctrl_c;
+            log "Error" "Your operating system is not Ubuntu, the script is prepared for ubuntu. Do you want to continue? [y/n]: "
+            read q
+        done
+    fi
 
     InstalledPrerequisites=("docker" "docker-compose" "ansible" "nodejs" "npm" "pip" "git" "pwgen" "unzip" "wget")
     for i in "${InstalledPrerequisites[@]}"
@@ -119,6 +146,7 @@ function getAccess(){
 - USER: admin
 - PASS: admin
 *** RECOMENDATE CHANGE YOUR PASSWORD http://$(hostname -I | cut -d ' ' -f1)/#/users/1/edit ***" > AccessFile
+    tput cnorm
 }
 
 # WorkFlow
